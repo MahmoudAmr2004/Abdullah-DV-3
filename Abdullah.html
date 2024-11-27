@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Incidents Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="visualization"></div>
+
+  <script>
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": {
+        "text": "Traffic Incidents in 2024",
+        "fontSize": 20,
+        "anchor": "start",
+        "color": "#4c78a8"
+      },
+      "width": 800,
+      "height": 600,
+      "params": [
+        {
+          "name": "typeSelection",
+          "value": null,
+          "select": { "type": "point", "fields": ["acci_name"] }
+        }
+      ],
+      "vconcat": [
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/sheriefAbdallah/CS318/refs/heads/main/Traffic_Incidents.csv",
+            "format": { "type": "csv" }
+          },
+          "mark": {
+            "type": "arc",
+            "innerRadius": 70,
+            "outerRadius": 120,
+            "stroke": "#ffffff",
+            "strokeWidth": 2
+          },
+          "encoding": {
+            "theta": {
+              "aggregate": "count",
+              "field": "acci_name",
+              "type": "quantitative",
+              "title": "Number of Incidents"
+            },
+            "color": {
+              "field": "acci_name",
+              "type": "nominal",
+              "title": "Accident Type",
+              "scale": { "scheme": "category20" },
+              "legend": { "orient": "right" }
+            },
+            "opacity": {
+              "condition": { "param": "typeSelection", "value": 1 },
+              "value": 0.3
+            },
+            "tooltip": [
+              { "field": "acci_name", "type": "nominal", "title": "Accident Type" },
+              {
+                "aggregate": "count",
+                "field": "acci_name",
+                "type": "quantitative",
+                "title": "Number of Incidents"
+              }
+            ]
+          }
+        },
+        {
+          "hconcat": [
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/sheriefAbdallah/CS318/refs/heads/main/Traffic_Incidents.csv",
+                "format": { "type": "csv" }
+              },
+              "transform": [{ "filter": { "param": "typeSelection" } }],
+              "mark": "bar",
+              "encoding": {
+                "x": {
+                  "field": "acci_time",
+                  "type": "temporal",
+                  "title": "Time of Incident"
+                },
+                "y": {
+                  "aggregate": "count",
+                  "field": "acci_name",
+                  "type": "quantitative",
+                  "title": "Number of Incidents",
+                  "scale": { "zero": true, "type": "linear", "domain": [0, 4] }
+                },
+                "color": {
+                  "field": "acci_name",
+                  "type": "nominal",
+                  "title": "Accident Type",
+                  "scale": { "scheme": "category20" },
+                  "legend": { "orient": "right" }
+                },
+                "tooltip": [
+                  { "field": "acci_name", "type": "nominal", "title": "Accident Type" },
+                  {
+                    "aggregate": "count",
+                    "field": "acci_name",
+                    "type": "quantitative",
+                    "title": "Number of Incidents"
+                  }
+                ]
+              }
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/sheriefAbdallah/CS318/refs/heads/main/Traffic_Incidents.csv",
+                "format": { "type": "csv" }
+              },
+              "transform": [{ "filter": { "param": "typeSelection" } }],
+              "mark": "point",
+              "encoding": {
+                "x": {
+                  "field": "acci_time",
+                  "type": "temporal",
+                  "title": "Time of Incident"
+                },
+                "y": {
+                  "aggregate": "count",
+                  "field": "acci_name",
+                  "type": "quantitative",
+                  "title": "Number of Incidents",
+                  "scale": { "domain": [0, 4] }
+                },
+                "color": {
+                  "field": "acci_name",
+                  "type": "nominal",
+                  "title": "Accident Type",
+                  "scale": { "scheme": "category20" },
+                  "legend": { "orient": "right" }
+                },
+                "size": { "value": 100 },
+                "tooltip": [
+                  { "field": "acci_name", "type": "nominal", "title": "Accident Type" },
+                  {
+                    "aggregate": "count",
+                    "field": "acci_name",
+                    "type": "quantitative",
+                    "title": "Number of Incidents"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "config": {
+        "legend": {
+          "orient": "right",
+          "titleFontSize": 12,
+          "labelFontSize": 10,
+          "symbolSize": 100
+        },
+        "view": { "stroke": null }
+      }
+    };
+
+    vegaEmbed('#visualization', spec).then(result => {
+      console.log('Visualization rendered:', result);
+    }).catch(console.error);
+  </script>
+</body>
+</html>
